@@ -1,5 +1,5 @@
 # MIT 6.S081 LAB
-- [ ] Util
+- [x] Util
 - [ ] Syscall
 - [ ] Pgtbl
 - [ ] Traps
