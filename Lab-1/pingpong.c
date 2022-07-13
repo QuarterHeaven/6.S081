@@ -2,35 +2,31 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 
-int main()
+int
+main(int argc, char *argv[])
 {
-    int p_parent[2];
-    int p_child[2];
-    pipe(p_parent);
-    pipe(p_child);
-    int pid = fork();
-
-    if (pid == 0)
-    {
-        char x[10];
-        close(p_parent[1]);
-        close(p_child[0]);
-        read(p_parent[0], x, 1);
-        printf("%d: received ping\n", getpid());
-        close(p_parent[0]);
-        write(p_child[1], x, 1);
-        close(p_child[1]);
+  int p[2];
+  pipe(p);
+  if (fork() == 0) {
+    close(0);
+    dup(p[0]);
+    close(p[0]);
+    char buf;
+    if (read(0, &buf, 1)) {
+      printf("%d: received ping\n", getpid());
+      write(p[1], "x", 1);
     }
-    else 
-    {
-        char y[10];
-        close(p_parent[0]);
-        close(p_child[1]);
-        write(p_parent[1],"x", 1);
-        close(p_parent[1]);
-        read(p_child[0], y, 1);
-        printf("%d: received pong\n", getpid());
-        close(p_child[0]);
+    close(p[1]);
+  } else {
+    write(p[1], "x", 1);
+    close(p[1]);
+    close(0);
+    dup(p[0]);
+    close(p[0]);
+    char buf;
+    if (read(0, &buf, 1)) {
+      printf("%d: received pong\n", getpid());
     }
-    exit(0);
+  }
+  exit(0);
 }
