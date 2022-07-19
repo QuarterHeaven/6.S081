@@ -46,7 +46,7 @@ sys_sbrk(void)
 
   if(argint(0, &n) < 0)
     return -1;
-  
+
   addr = myproc()->sz;
   if(growproc(n) < 0)
     return -1;
@@ -81,7 +81,14 @@ int
 sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
-  return 0;
+  uint64 starter;
+  int number;
+  uint64 buf;
+  if (argaddr(2, &buf) < 0 || argint(1, &number) < 0 || argaddr(0, &starter)) {
+    return -1;
+  }
+
+  return pgaccess((void*)starter, number, (void*)buf);
 }
 #endif
 
